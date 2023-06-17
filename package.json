@@ -4,7 +4,7 @@
   "description": "mesto_express",
   "main": "index.js",
   "scripts": {
-    "start": "app.js",
+    "start": "node app.js",
     "dev": "nodemon app.js",
     "lint": "npx eslint"
   },
