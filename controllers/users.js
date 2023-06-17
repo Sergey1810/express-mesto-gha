@@ -6,7 +6,7 @@ const getUsers = (req, res) => {
             return res.status(200).send(users);
         })
         .catch((e) => {
-            res.status(500).send({"message": "Произошла ошибка"})
+            res.status(500).send({"message": "На сервере произошла ошибка"})
         })
 };
 
@@ -24,7 +24,7 @@ const getUserById = (req, res) => {
             if (e.name === "CastError"){
                 return res.status(404).send({ message: `Пользователь по указанному ${id} не найден.` });
             }
-            return res.status(500).send({ message: "Произошла ошибка"});
+            return res.status(500).send({ message: "На сервере произошла ошибка"});
         })
 };
 
@@ -38,7 +38,7 @@ const createUser = (req, res) => {
             if (e.name === "ValidationError"){
                 return res.status(400).send({ message: "Переданы некорректные данные при создании пользователя" });
             }
-            return res.status(500).send({ message: "Произошла ошибка" });
+            return res.status(500).send({ message: "На сервере произошла ошибка" });
         })
 };
 
@@ -55,7 +55,7 @@ const updateUserById = (req, res) => {
             } else if (e.name === "CastError"){
                 return res.status(404).send({ message: `Пользователь по указанному ${id} не найден.` });
             }
-            res.status(500).send({ message: 'Произошла ошибка' })
+            res.status(500).send({ message: 'На сервере произошла ошибка' })
         });
 };
 
@@ -72,7 +72,7 @@ const updateAvatarUserById = (req, res) => {
                 } else if (e.name === "CastError"){
                     return res.status(404).send({ message: `Пользователь по указанному ${id} не найден.` });
                 }
-                res.status(500).send({ message: 'Произошла ошибка' })
+                res.status(500).send({ message: 'На сервере произошла ошибка' })
             });
 };
 
