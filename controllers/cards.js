@@ -51,13 +51,14 @@ const deleteLikeCardById = (req, res) => {
         { $pull: { likes: req.user._id } },
         { new: true },)
         .then((card) => {
+            if (!card){
+                return res.status(404).send({ message: `Передан несуществующий ${id} карточки.` });
+            }
             return res.status(200).send(card);
         })
         .catch((e) => {
             if (e.name === "ValidationError") {
                 return res.status(400).send({ message: "Переданы некорректные данные для постановки/снятии лайка." });
-            } else if (e.name === "CastError") {
-                return res.status(404).send({ message: `Передан несуществующий ${id} карточки.` });
             }
             res.status(500).send({ message: 'На сервере произошла ошибка' })
         });
@@ -79,8 +80,6 @@ const updateLikesCardById = (req, res) => {
             console.log(e.name)
             if (e.name === "ValidationError") {
                 return res.status(400).send({ message: "Переданы некорректные данные для постановки/снятии лайка." });
-            } else if (e.name === "CastError") {
-                return res.status(404).send({ message: `Передан несуществующий ${id} карточки.` });
             }
             res.status(500).send({ message: 'На сервере произошла ошибка' })
         });
