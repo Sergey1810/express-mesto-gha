@@ -15,9 +15,13 @@ const getUserById = (req, res) => {
 
     return User.findById(id)
         .then((user) => {
+            if (!user){
+                return res.status(400).send({ message: `Пользователь по указанному ${id} не найден.` });
+            }
             return res.status(200).send(user);
         })
         .catch((e) => {
+            console.log(e.name)
             if (e.name === "CastError"){
                 return res.status(404).send({ message: `Пользователь по указанному ${id} не найден.` });
             }
@@ -59,7 +63,6 @@ const updateUserById = (req, res) => {
 const updateAvatarUserById = (req, res) => {
     const { id } = req.params;
     const { avatar } = req.body
-    if (id == req.user._id) {
         return User.findByIdAndUpdate(id, { avatar: avatar })
             .then((user) => {
                 res.send({ data: user })
@@ -72,7 +75,6 @@ const updateAvatarUserById = (req, res) => {
                 }
                 res.status(500).send({ message: 'Произошла ошибка' })
             });
-    }
 };
 
 module.exports = {
