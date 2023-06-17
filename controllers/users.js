@@ -32,7 +32,7 @@ const createUser = (req, res) => {
     const newUserData = req.body;
     return User.create(newUserData)
         .then((newUser) => {
-            return res.status(201).send(newUser);
+            return res.status(200).send(newUser);
         })
         .catch((e) => {
             if (e.name === "ValidationError"){
@@ -47,7 +47,7 @@ const updateUserById = (req, res) => {
     const updateUser = req.body;
     return User.findByIdAndUpdate(id, updateUser)
         .then((user) => {
-            res.status(201).send({ data: user })
+            res.status(200).send(user)
         })
         .catch((e) => {
             if (e.name === "ValidationError"){
