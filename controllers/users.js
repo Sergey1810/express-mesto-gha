@@ -16,13 +16,13 @@ const getUserById = (req, res) => {
     return User.findById(id)
         .then((user) => {
             if (!user){
-                return res.status(400).send({ message: `Пользователь по указанному ${id} не найден.` });
+                return res.status(404).send({ message: `Пользователь по указанному ${id} не найден.` });
             }
             return res.status(200).send(user);
         })
         .catch((e) => {
             if (e.name === "CastError"){
-                return res.status(404).send({ message: `Пользователь по указанному ${id} не найден.` });
+                return res.status(400).send({ message: `Пользователь по указанному ${id} не найден.` });
             }
             return res.status(500).send({ message: "На сервере произошла ошибка"});
         })
