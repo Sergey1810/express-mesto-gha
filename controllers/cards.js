@@ -29,7 +29,7 @@ const createCard = (req, res) => {
 
 const deleteCardById = (req, res) => {
     const { id } = req.params;
-    Card.findByIdAndRemove(id)
+    return Card.findByIdAndRemove(id)
         .then((card) => {
             if (!card) {
                 return res.status(404).send({ message: `Карточка с указанным ${id} не найдена.` });
@@ -46,7 +46,7 @@ const deleteCardById = (req, res) => {
 
 const deleteLikeCardById = (req, res) => {
     const { id } = req.params;
-    Card.findByIdAndUpdate(
+    return Card.findByIdAndUpdate(
         id,
         { $pull: { likes: req.user._id } },
         { new: true },)
@@ -57,7 +57,7 @@ const deleteLikeCardById = (req, res) => {
             return res.status(200).send(card);
         })
         .catch((e) => {
-            if (e.name === "ValidationError") {
+            if (e.name === 'CastError') {
                 return res.status(400).send({ message: "Переданы некорректные данные для постановки/снятии лайка." });
             }
             res.status(500).send({ message: 'На сервере произошла ошибка' })
@@ -66,7 +66,7 @@ const deleteLikeCardById = (req, res) => {
 
 const updateLikesCardById = (req, res) => {
     const { id } = req.params;
-    Card.findByIdAndUpdate(
+    return Card.findByIdAndUpdate(
         id,
         { $addToSet: { likes: req.user._id } },
         { new: true })
@@ -78,7 +78,7 @@ const updateLikesCardById = (req, res) => {
         })
         .catch((e) => {
             console.log(e.name)
-            if (e.name === "ValidationError") {
+            if (e.name === 'CastError') {
                 return res.status(400).send({ message: "Переданы некорректные данные для постановки/снятии лайка." });
             }
             res.status(500).send({ message: 'На сервере произошла ошибка' })
