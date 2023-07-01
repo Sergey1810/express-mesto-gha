@@ -28,8 +28,7 @@ app.use((req, res, next) => {
 
 app.use(routes);
 
-app.use(errorMiddlewares())
-
+app.use(errorMiddlewares)
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
 }) 
