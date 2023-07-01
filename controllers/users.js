@@ -1,7 +1,7 @@
 const User = require("../models/users");
 const bcrypt = require('bcrypt');
 const { generateToken, verifyToken } = require('../utils/token');
-const UnauthorizedError = require("../errors/unauthorized-error");
+
 
 const SALT_ROUNDS = 10
 

@@ -10,12 +10,9 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         validate: {
-            validator: function (v) {
-                return /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
-            },
-            message: props => `${props.value} is not a valid phone number!`
+            validator: (valid) => isEmail(valid),
+            message: 'Неверный формат почты',
         },
-
         required: true,
         unique: true,
     },
@@ -31,6 +28,12 @@ const userSchema = new mongoose.Schema({
     },
     avatar: {
         type: String,
+        validate: {
+            validator: function (v) {
+                return /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        },
         default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
     }
 });
