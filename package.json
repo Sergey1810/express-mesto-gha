@@ -11,12 +11,15 @@
   "author": "sergey_lisovtsev",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "eslint": "^8.42.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
     "express": "^4.18.2",
-    "mongoose": "^7.2.3"
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.2.3",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
