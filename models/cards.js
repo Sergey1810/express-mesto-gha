@@ -10,16 +10,22 @@ const cardSchema = new mongoose.Schema({
     },
     link: {
         type: String,
+        validate: {
+            validator: function (v) {
+                return /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        },
         required: true
     },
     owner: {
         type: ObjectId,
         required: true
     },
-    likes : [
+    likes: [
         {
             type: ObjectId,
-            default:[]
+            default: []
         }
     ],
     createdAt: {
