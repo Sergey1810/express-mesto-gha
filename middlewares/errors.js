@@ -1,7 +1,6 @@
 const BadRequestError = require("../errors/bad-request-error");
 const ConflictError = require("../errors/conflict-error");
 const ForbiddenError = require("../errors/forbidden-error");
-const InternalServerError = require("../errors/internal-server-error");
 const NotFoundError = require("../errors/not-found-error");
 const UnauthorizedError = require("../errors/unauthorized-error");
 
@@ -17,7 +16,7 @@ const errorMiddlewares = (err, req, res, next) => {
     } else if (err.statusCode === 401) {
         throw new UnauthorizedError("передан неверный логин или пароль")
     } 
-    throw new InternalServerError()
+    res.status(500).send({ message: "server errors" });
     next();
 }
 

@@ -10,11 +10,11 @@ const generateToken = (id) => {
 const verifyToken = (token) => {
     const payload = jwt.verify(token, JWT_SECRET)
     const user = User.findById(payload._id)
-    if(!user){
+    if (!user) {
         throw new UnauthorizedError("передан неверный логин или пароль")
     }
-      return payload 
-        
+    return payload
+
     //     function(err, decoded) {
     //     if (err) return false;
     //     return User.findById(decoded.id)

@@ -2,7 +2,6 @@ const User = require("../models/users");
 const bcrypt = require('bcrypt');
 const { generateToken } = require('../utils/token');
 const BadRequestError = require("../errors/bad-request-error");
-const InternalServerError = require("../errors/internal-server-error");
 
 
 const SALT_ROUNDS = 10
@@ -20,7 +19,21 @@ const userBadRequestError = (e, res) => {
     } else if (e.name === "CastError") {
         return res.status(404).send({ message: `Пользователь по указанному id не найден.` });
     }
-    throw new InternalServerError()
+    return res.status(500).send({ message: "На сервере произошла ошибка" });
+}
+
+const getUserMe = (req, res) => {
+    const id = req.user.id
+    return User.findById(id)
+        .then((user) => {
+            if (!user) {
+                return res.status(403).send({ message: "Такого пользователя не существует" });
+            }
+            return res.status(200).send(user)
+        })
+        .catch((e) => {  
+            userBadRequestError(e, res, id)
+        })
 }
 
 const getUsers = (req, res) => {
@@ -29,16 +42,15 @@ const getUsers = (req, res) => {
             return res.status(200).send(users);
         })
         .catch((e) => {
-            throw new InternalServerError()
+            userBadRequestError(e, res)
         })
 };
 
 const getUserById = (req, res) => {
     const { id } = req.params;
-
     return User.findById(id)
         .then((user) => {
-            userNotFoundErrors(user)
+            return res.status(200).send(user);
         })
         .catch((e) => {
             userBadRequestError(e, res)
@@ -107,14 +119,13 @@ const login = (req, res) => {
                     return res.status(403).send({ message: "Неправильный пароль" });
                 }
                 const token = generateToken(user._id);
-                console.log(token)
                 return res.status(200).send({ token });
             });
         })
         .catch((e) => {
             userBadRequestError(e, res)
         })
-};
+}
 
 module.exports = {
     getUsers,
@@ -122,5 +133,6 @@ module.exports = {
     createUser,
     updateUserById,
     updateAvatarUserById,
-    login
+    login,
+    getUserMe
 }

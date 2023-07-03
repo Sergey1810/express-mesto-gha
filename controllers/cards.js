@@ -8,7 +8,7 @@ const cardsBadRequestError = (e, res) => {
     } else if (e.name === "CastError") {
         return res.status(400).send({ message: `Карточка с указанным ${id} не найдена.` });
     }
-    throw new InternalServerError()
+    throw new InternalServerError("На сервере произошла ошибка")
 }
 
 const cardNotFoundError = (card) => {
@@ -48,7 +48,7 @@ const deleteCardById = (req, res) => {
             cardNotFoundError(card)
         })
         .catch((e) => {
-            throw new InternalServerError()
+            cardsBadRequestError(e,res)
         })
 
     if (card.owner !== owner) {

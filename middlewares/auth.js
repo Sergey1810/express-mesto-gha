@@ -13,10 +13,11 @@ const auth = (req, res, next) => {
         if (!payload) {
             throw new UnauthorizedError("передан неверный логин или пароль")
         }  
-    } catch (err) {
-        next(err)
+    } catch (e) {
+        next(e)
     }
     req.user = payload;
+    
     next();
 };
 
