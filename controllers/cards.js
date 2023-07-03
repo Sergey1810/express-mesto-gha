@@ -6,14 +6,14 @@ const cardsBadRequestError = (e, res) => {
     if (e.name === "ValidationError") {
         return res.status(400).send({ message: "Переданы некорректные данные при создании карточки." });
     } else if (e.name === "CastError") {
-        return res.status(400).send({ message: `Карточка с указанным ${id} не найдена.` });
+        return res.status(400).send({ message: `Карточка с указанным id не найдена.` });
     }
     throw new InternalServerError("На сервере произошла ошибка")
 }
 
 const cardNotFoundError = (card) => {
     if (!card) {
-        return res.status(404).send({ message: `Карточка с указанным ${id} не найдена.` });
+        return res.status(404).send({ message: `Карточка с указанным id не найдена.` });
     }
     return res.status(200).send(card);
 }
