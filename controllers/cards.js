@@ -1,13 +1,15 @@
 const Card = require('../models/cards');
 const ForbiddenError = require('../errors/forbidden-error');
+const BadRequestError = require('../errors/bad-request-error');
+const InternalServerError = require('../errors/internal-server-error');
 
-const cardsBadRequestError = (e, res) => {
+const cardsBadRequestError = (e, res, next) => {
   if (e.name === 'ValidationError') {
-    return res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
+    next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
   } if (e.name === 'CastError') {
-    return res.status(400).send({ message: 'Карточка с указанным id не найдена.' });
+    next(new BadRequestError('Карточка с указанным id не найдена.'));
   }
-  return res.status(500).send({ message: 'На сервере произошла ошибка' });
+  next(new InternalServerError('На сервере произошла ошибка'));
 };
 
 // const cardNotFoundError = (card) => {
@@ -17,23 +19,23 @@ const cardsBadRequestError = (e, res) => {
 //     return res.status(200).send(card);
 // }
 
-const getCards = (req, res) => Card.find({})
+const getCards = (req, res, next) => Card.find({})
   .then((cards) => res.status(200).send(cards))
   .catch((e) => {
-    cardsBadRequestError(e, res);
+    cardsBadRequestError(e, res, next);
   });
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const owner = req.user.id;
   const newCardData = req.body;
   return Card.create({ ...newCardData, owner })
     .then((newCard) => res.status(201).send(newCard))
     .catch((e) => {
-      cardsBadRequestError(e, res);
+      cardsBadRequestError(e, res, next);
     });
 };
 
-const deleteCardById = (req, res) => {
+const deleteCardById = (req, res, next) => {
   const owner = req.user._id;
   const { id } = req.params;
   const card = Card.findById(id)
@@ -41,21 +43,21 @@ const deleteCardById = (req, res) => {
       res.status(200).send(cards);
     })
     .catch((e) => {
-      cardsBadRequestError(e, res);
+      cardsBadRequestError(e, res, next);
     });
   if (card.owner !== owner) {
-    throw new ForbiddenError('Переданы некорректные данные при удалении карточки.');
+    next(new ForbiddenError('Переданы некорректные данные при удалении карточки.'));
   }
   return Card.findByIdAndRemove(id)
     .then((cardRemove) => {
       res.status(200).send({ data: cardRemove });
     })
     .catch((e) => {
-      cardsBadRequestError(e, res);
+      cardsBadRequestError(e, res, next);
     });
 };
 
-const deleteLikeCardById = (req, res) => {
+const deleteLikeCardById = (req, res, next) => {
   const { id } = req.params;
   return Card.findByIdAndUpdate(
     id,
@@ -66,11 +68,11 @@ const deleteLikeCardById = (req, res) => {
       res.status(200).send(card);
     })
     .catch((e) => {
-      cardsBadRequestError(e, res);
+      cardsBadRequestError(e, res, next);
     });
 };
 
-const updateLikesCardById = (req, res) => {
+const updateLikesCardById = (req, res, next) => {
   const { id } = req.params;
   return Card.findByIdAndUpdate(
     id,
@@ -81,7 +83,7 @@ const updateLikesCardById = (req, res) => {
       res.status(200).send(card);
     })
     .catch((e) => {
-      cardsBadRequestError(e, res);
+      cardsBadRequestError(e, res, next);
     });
 };
 
