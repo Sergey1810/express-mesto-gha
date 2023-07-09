@@ -59,31 +59,43 @@ const deleteCardById = (req, res, next) => {
 
 const deleteLikeCardById = (req, res, next) => {
   const { id } = req.params;
-  return Card.findByIdAndUpdate(
-    id,
-    { $pull: { likes: req.user.id } },
-    { new: true },
-  )
-    .then((card) => {
-      res.status(200).send(card);
-    })
-    .catch((e) => {
-      cardsBadRequestError(e, res, next);
+  Card.findById(id)
+    .then((cards) => {
+      if (!cards) {
+        next(new NotFoundError('Переданы некорректные данные при удалении лайка карточки.'));
+      }
+      return Card.findByIdAndUpdate(
+        id,
+        { $pull: { likes: req.user.id } },
+        { new: true },
+      )
+        .then((card) => {
+          res.status(200).send(card);
+        })
+        .catch((e) => {
+          cardsBadRequestError(e, res, next);
+        });
     });
 };
 
 const updateLikesCardById = (req, res, next) => {
   const { id } = req.params;
-  return Card.findByIdAndUpdate(
-    id,
-    { $addToSet: { likes: req.user.id } },
-    { new: true },
-  )
-    .then((card) => {
-      res.status(200).send(card);
-    })
-    .catch((e) => {
-      cardsBadRequestError(e, res, next);
+  Card.findById(id)
+    .then((cards) => {
+      if (!cards) {
+        next(new NotFoundError('Переданы некорректные данные для постановки лайка'));
+      }
+      return Card.findByIdAndUpdate(
+        id,
+        { $addToSet: { likes: req.user.id } },
+        { new: true },
+      )
+        .then((card) => {
+          res.status(200).send(card);
+        })
+        .catch((e) => {
+          cardsBadRequestError(e, res, next);
+        });
     });
 };
 
