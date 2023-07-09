@@ -22,7 +22,7 @@ const userBadRequestError = (e, res, next) => {
   } if (e.name === 'CastError') {
     next(new NotFoundError('Пользователь по указанному id не найден.'));
   }
-  return next(new InternalServerError('На сервере произошла ошибка'));
+  return next(new InternalServerError('errors'));
 };
 
 const getUserMe = (req, res, next) => {
@@ -43,11 +43,11 @@ const getUsers = (req, res, next) => User.find({})
   .then((users) => res.status(200).send(users))
   .catch((e) => userBadRequestError(e, res, next));
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { id } = req.params;
   return User.findById(id)
     .then((user) => res.status(200).send(user))
-    .catch((e) => userBadRequestError(e, res));
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -59,13 +59,13 @@ const createUser = (req, res, next) => {
     avatar,
   } = req.body;
   if (!email || !password) {
-    next(new BadRequestError('Не передан email или пароль'));
+    throw new BadRequestError('Не передан email или пароль');
   }
   return User.findOne({ email })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        next(new ConflictError('Пользователь уже существует'));
+        throw new ConflictError('Пользователь уже существует');
       }
       bcrypt.hash(
         password,
@@ -80,50 +80,42 @@ const createUser = (req, res, next) => {
           .then((users) => res.status(201).send(users)),
       );
     })
-    .catch((e) => {
-      userBadRequestError(e, res);
-    });
+    .catch(next);
 };
 
-const updateUserById = (req, res) => {
+const updateUserById = (req, res, next) => {
   const { id } = req.params;
   const updateUser = req.body;
   return User.findByIdAndUpdate(id, updateUser)
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch((e) => {
-      userBadRequestError(e, res);
-    });
+    .catch(next);
 };
 
-const updateAvatarUserById = (req, res) => {
+const updateAvatarUserById = (req, res, next) => {
   const { id } = req.params;
   const { avatar } = req.body;
   return User.findByIdAndUpdate(id, { avatar })
     .then((user) => {
       res.send({ data: user });
     })
-    .catch((e) => {
-      userBadRequestError(e, res);
-    });
+    .catch(next);
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
-    next(new BadRequestError('Не передан email или пароль'));
+    return res.status(400).send({ message: 'Не передан email или пароль' });
   }
-  return User.findOne({ email })
-    // eslint-disable-next-line consistent-return
+  User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        next(new ForbiddenError('Такого пользователя не существует'));
+        return res.status(403).send({ message: 'Такого пользователя не существует' });
       }
       bcrypt.compare(password, user.password, (err, isPasswordMatch) => {
         if (!isPasswordMatch) {
-          next(new ForbiddenError('Неправильный пароль'));
+          return res.status(403).send({ message: 'Неправильный логин или пароль' });
         }
         const token = generateToken(user._id);
         return res.status(200).send({ token });

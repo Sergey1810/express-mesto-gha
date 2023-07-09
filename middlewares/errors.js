@@ -11,7 +11,7 @@ const errorMiddlewares = (err, req, res, next) => {
   } if (err.statusCode === 401) {
     return res.status(401).send({ message: 'Не передан email или пароль' });
   }
-  res.status(500).send({ message: 'server errors' });
+  res.status(500).send({ message: 'На сервере произошла ошибка' });
   next();
 };
 

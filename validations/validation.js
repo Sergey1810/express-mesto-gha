@@ -10,44 +10,44 @@ const url = (path, err) => {
   return path;
 };
 
-const cardIsValid = () => celebrate({
+const cardIsValid = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().custom(url),
   }),
 });
 
-const userIsValid = () => celebrate({
+const userIsValid = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().custom(url),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(4),
+  }),
+});
+
+const updateUserIsValid = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().custom(url),
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
   }),
 });
 
-const updateUserIsValid = () => celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-  }),
-});
-
-const avatarIsValid = () => celebrate({
+const avatarIsValid = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().required().custom(url),
   }),
 });
 
-const loginIsValid = () => celebrate({
+const loginIsValid = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required().min(4),
   }),
 });
 
-const idIsValid = () => celebrate({
+const idIsValid = celebrate({
   params: Joi.object().keys({
     id: Joi.string().alphanum().length(24),
   }),
