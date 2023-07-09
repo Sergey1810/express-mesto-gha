@@ -103,12 +103,14 @@ const updateAvatarUserById = (req, res, next) => {
     .catch(next);
 };
 
+// eslint-disable-next-line consistent-return
 const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).send({ message: 'Не передан email или пароль' });
   }
   User.findOne({ email }).select('+password')
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
         return res.status(403).send({ message: 'Такого пользователя не существует' });
@@ -123,6 +125,7 @@ const login = (req, res, next) => {
     })
     .catch((e) => {
       userBadRequestError(e, res);
+      next(e);
     });
 };
 
