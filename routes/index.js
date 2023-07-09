@@ -10,7 +10,7 @@ router.post('/signin', loginIsValid, login);
 router.post('/signup', userIsValid, createUser);
 router.use('/users', userRoutes);
 router.use('/cards', cardRoutes);
-router.use('*', () => {
+router.use('*', (req, res, next) => {
   // eslint-disable-next-line no-undef
   next(new NotFoundError('Не корректный путь'));
 });

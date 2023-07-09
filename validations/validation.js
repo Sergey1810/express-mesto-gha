@@ -2,10 +2,10 @@
 const { celebrate, Joi } = require('celebrate');
 const { isURL } = require('validator');
 
-const url = (path, err) => {
+const url = (path, e) => {
   if (!isURL(path)) {
     // eslint-disable-next-line no-useless-escape
-    return err.message('не верный url');
+    return e.message('не верный url');
   }
   return path;
 };

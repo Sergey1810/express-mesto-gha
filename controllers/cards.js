@@ -2,6 +2,7 @@ const Card = require('../models/cards');
 const ForbiddenError = require('../errors/forbidden-error');
 const BadRequestError = require('../errors/bad-request-error');
 const InternalServerError = require('../errors/internal-server-error');
+const NotFoundError = require('../errors/not-found-error');
 
 const cardsBadRequestError = (e, res, next) => {
   if (e.name === 'ValidationError') {
@@ -36,25 +37,24 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
-  const owner = req.user._id;
+  const owner = req.user.id;
   const { id } = req.params;
   const card = Card.findById(id)
     .then((cards) => {
+      if (!cards) {
+        next(new NotFoundError('Переданы некорректные данные при удалении карточки.'));
+      }
+      if (card.owner !== owner) {
+        next(new ForbiddenError('Переданы некорректные данные при удалении карточки.'));
+      }
       res.status(200).send(cards);
     })
-    .catch((e) => {
-      cardsBadRequestError(e, res, next);
-    });
-  if (card.owner !== owner) {
-    next(new ForbiddenError('Переданы некорректные данные при удалении карточки.'));
-  }
+    .catch(next);
   return Card.findByIdAndRemove(id)
     .then((cardRemove) => {
       res.status(200).send({ data: cardRemove });
     })
-    .catch((e) => {
-      cardsBadRequestError(e, res, next);
-    });
+    .catch(next);
 };
 
 const deleteLikeCardById = (req, res, next) => {
