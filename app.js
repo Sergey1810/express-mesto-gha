@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routes = require('./routes/index');
 const errorMiddlewares = require('./middlewares/errors');
+// eslint-disable-next-line import/order
+const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
@@ -17,6 +19,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(bodyParser.json());
 
 app.use(routes);
+
+app.use(errors());
 
 app.use(errorMiddlewares);
 app.listen(PORT, () => {
