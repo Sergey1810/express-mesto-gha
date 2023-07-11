@@ -9,13 +9,6 @@ const InternalServerError = require('../errors/internal-server-error');
 
 const SALT_ROUNDS = 10;
 
-// const userNotFoundErrors = (user) => {
-//     if (!user) {
-//         return res.status(404).send({ message: `Пользователь по указанному id не найден.` });
-//     }
-//     return res.status(200).send(user);
-// }
-
 const userBadRequestError = (e, res, next) => {
   if (e.name === 'ValidationError') {
     next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
@@ -84,9 +77,9 @@ const createUser = (req, res, next) => {
 };
 
 const updateUserById = (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.user;
   const updateUser = req.body;
-  return User.findByIdAndUpdate(id, updateUser)
+  return User.findByIdAndUpdate(id, updateUser, { new: true })
     .then((user) => {
       res.status(200).send(user);
     })
@@ -94,11 +87,11 @@ const updateUserById = (req, res, next) => {
 };
 
 const updateAvatarUserById = (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.user;
   const { avatar } = req.body;
-  return User.findByIdAndUpdate(id, { avatar })
+  return User.findByIdAndUpdate(id, { avatar }, { new: true })
     .then((user) => {
-      res.send({ data: user });
+      res.send(user);
     })
     .catch(next);
 };

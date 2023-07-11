@@ -13,13 +13,6 @@ const cardsBadRequestError = (e, res, next) => {
   next(new InternalServerError('На сервере произошла ошибка'));
 };
 
-// const cardNotFoundError = (card) => {
-//     if (!card) {
-//         return res.status(404).send({ message: `Карточка с указанным id не найдена.` });
-//     }
-//     return res.status(200).send(card);
-// }
-
 const getCards = (req, res, next) => Card.find({})
   .then((cards) => res.status(200).send(cards))
   .catch((e) => {
@@ -39,20 +32,19 @@ const createCard = (req, res, next) => {
 const deleteCardById = (req, res, next) => {
   const owner = req.user.id;
   const { id } = req.params;
-  const card = Card.findById(id)
+  Card.findById(id)
+    // eslint-disable-next-line consistent-return
     .then((cards) => {
       if (!cards) {
         next(new NotFoundError('Переданы некорректные данные при удалении карточки.'));
       }
-      if (card.owner !== owner) {
-        next(new ForbiddenError('Переданы некорректные данные при удалении карточки.'));
+      if (cards.owner.toString() === owner) {
+        return Card.findByIdAndRemove(cards.id)
+          .then((cardRemove) => {
+            res.status(200).send({ data: cardRemove });
+          });
       }
-      res.status(200).send(cards);
-    })
-    .catch(next);
-  return Card.findByIdAndRemove(id)
-    .then((cardRemove) => {
-      res.status(200).send({ data: cardRemove });
+      next(new ForbiddenError('Переданы некорректные данные при удалении карточки.'));
     })
     .catch(next);
 };
